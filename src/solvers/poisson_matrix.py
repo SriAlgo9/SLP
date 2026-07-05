@@ -61,7 +61,40 @@ def poisson_matrix(Nx, Ny, h):
 
 # RHS for Pressure Poisson Equation
 
-def build_rhs(ux_star, uy_star, rho, dt, dx):
+def build_rhs(ux_star, uy_star, rho, dt, dx, dy):
+
+    Ny = ux_star.shape[0]
+    Nx = uy_star.shape[1]
+
+    b = np.zeros(Nx * Ny)
+
+    for j in range(Ny):
+        for i in range(Nx):
+
+            k = j * Nx + i
+
+            dudx = 0.0
+            dvdy = 0.0
+
+            if 0 < i < Nx-1:
+                dudx = (
+                    ux_star[j, i]
+                    - ux_star[j, i-1]
+                ) / dx
+
+            if 0 < j < Ny-1:
+                dvdy = (
+                    uy_star[j, i]
+                    - uy_star[j-1, i]
+                ) / dy
+
+            b[k] = (rho/dt) * (dudx + dvdy)
+
+    return b
+
+
+
+'''def build_rhs(ux_star, uy_star, rho, dt, dx, dy):
 
     Ny, Nx = ux_star.shape
 
@@ -75,7 +108,7 @@ def build_rhs(ux_star, uy_star, rho, dt, dx):
             b[k] = (rho/dt)*(
                 (ux_star[j,i+1] - ux_star[j,i-1])/(2*dx)
                 +
-                (uy_star[j+1,i] - uy_star[j-1,i])/(2*dx)
+                (uy_star[j+1,i] - uy_star[j-1,i])/(2*dy)
             )
 
-    return b
+    return b'''
