@@ -1,10 +1,5 @@
 import numpy as np
 from src.utils.diffusion_term import diffusion_ux, diffusion_uy
-#ux = np. zeros ((Ny, Nx), dtype = np.float32)
-#uy = np. zeros ((Ny, Nx), dtype = np.float32) 
-
-#ux_star = np. zeros ((Ny, Nx), dtype = np.float32)
-#uy_star = np. zeros ((Ny, Nx), dtype = np.float32)
 
 def compute_ux_star(ux, uy, dt, dx, dy, nu):
 
@@ -54,39 +49,3 @@ def compute_uy_star(ux, uy, dt, dx, dy, nu):
 
             uy_star[j, i] = (uy[j, i] - dt/(4*dy) * (convection_x + convection_y) + dt*diff_y[j, i] )
     return uy_star
-
-
-
-
-#velocity correction
-def compute_ux(ux_star, dt, dx, rho, p):
-    
-    Ny, Nx = ux_star.shape
-
-    velocity_ux = ux_star.copy()
-    
-    for j in range(1, Ny-1):
-        for i in range(1, Nx-1):
-
-         velocity_ux[j,i] = ux_star[j,i] - (dt/rho)*(p[j,i+1] - p[j,i])/(dx)
-        #if we use  p[j,i+1] - p[j,i-1] it becomes a collocated grid
-    return velocity_ux
-
-def compute_uy(uy_star, dt, dy, rho, p):
-   
-    Ny,Nx = uy_star.shape
-
-    velocity_uy = uy_star.copy()
-
-    for j in range(1, Ny-1):
-        for i in range (1, Nx-1):
-            
-            velocity_uy[j,i] = uy_star[j,i] - (dt/rho)*(p[j+1,i] - p[j,i])/(dy)
-            #if we use p[j+1,i] - p[j-1,i] it becomes a collocated grid
-
-    return velocity_uy
-
-
-
-
-

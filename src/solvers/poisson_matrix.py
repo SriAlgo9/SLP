@@ -3,6 +3,44 @@ from scipy.sparse import lil_matrix
 
 def poisson_matrix(Nx, Ny, h):
 
+    """
+    Assemble the sparse matrix for the two-dimensional Pressure Poisson Equation.
+
+    The Laplacian operator is discretized using the second-order central
+    difference method. Homogeneous Neumann boundary conditions are imposed
+    by modifying the stencil coefficients along the domain boundaries.
+
+    Parameters
+    ----------
+    Nx : int
+        Number of grid points in the x-direction.
+
+    Ny : int
+        Number of grid points in the y-direction.
+
+    h : float
+        Uniform grid spacing (dx = dy).
+
+    Returns
+    -------
+    scipy.sparse.lil_matrix
+        Sparse coefficient matrix representing the discrete Laplacian
+        operator divided by h².
+
+    Notes
+    -----
+    The matrix corresponds to the five-point finite difference stencil
+
+            0   1   0
+            1  -4   1
+            0   1   0
+
+    with Neumann boundary conditions implemented using mirrored stencil
+    coefficients.
+    """
+
+    
+
     N = Nx * Ny
 
     A = lil_matrix((N, N))
