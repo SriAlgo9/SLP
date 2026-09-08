@@ -54,6 +54,7 @@ def analytical_velocity(
     return u_theta
 
 
+
 # ==========================================================
 # Cartesian velocity
 # ==========================================================
@@ -119,25 +120,22 @@ def analytical_cartesian_velocity(
 # ==========================================================
 
 def analytical_vorticity(
-    r,
+    X,
+    Y,
     Gamma=1.0,
     rc=0.1,
     nu=0.001,
-    t=0.0
+    t=0.0,
+    xc=0.5,
+    yc=0.5,
 ):
-    """
-    Lamb-Oseen vorticity.
 
-    Returns
-    -------
-    omega
-    """
+    r = np.sqrt((X-xc)**2 + (Y-yc)**2)
 
     rc_t = np.sqrt(rc**2 + 4.0*nu*t)
 
     omega = (
-        Gamma
-        /
+        Gamma /
         (np.pi * rc_t**2)
     ) * np.exp(
         -(r**2)/(rc_t**2)
@@ -319,70 +317,5 @@ def velocity_profile(
 
     return r, u
 
-# ==========================================================
-# Horizontal vorticity centreline
-# ==========================================================
 
-def sample_horizontal_vorticity(
-    x,
-    Lx,
-    Ly,
-    Gamma=1.0,
-    rc=0.1,
-    nu=0.001,
-    t=0.0
-):
-    """
-    Analytical vorticity along y = Ly/2.
-    """
 
-    xc = Lx / 2
-    yc = Ly / 2
-
-    y = np.full_like(x, yc)
-
-    r = np.sqrt((x - xc)**2 + (y - yc)**2)
-
-    omega = analytical_vorticity(
-        r,
-        Gamma,
-        rc,
-        nu,
-        t
-    )
-
-    return omega
-
-# ==========================================================
-# Vertical vorticity centreline
-# ==========================================================
-
-def sample_vertical_vorticity(
-    y,
-    Lx,
-    Ly,
-    Gamma=1.0,
-    rc=0.1,
-    nu=0.001,
-    t=0.0
-):
-    """
-    Analytical vorticity along x = Lx/2.
-    """
-
-    xc = Lx / 2
-    yc = Ly / 2
-
-    x = np.full_like(y, xc)
-
-    r = np.sqrt((x - xc)**2 + (y - yc)**2)
-
-    omega = analytical_vorticity(
-        r,
-        Gamma,
-        rc,
-        nu,
-        t
-    )
-
-    return omega

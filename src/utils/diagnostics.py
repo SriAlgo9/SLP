@@ -63,60 +63,68 @@ def compute_divergence(ux, uy, dx, dy):
 
 
 # ==========================================================
-# Vorticity
+# Vorticity centreline
 # ==========================================================
 
 def compute_vorticity(ux, uy, dx, dy):
-    """
-    Compute vorticity
 
-        omega = dv/dx - du/dy
+    Ny, Nxm1 = ux.shape
+    Nx = Nxm1 + 1
 
-    at cell centres.
-    """
+    omega = np.zeros((Ny - 2, Nx - 2))
 
-    u_center, v_center, _ = compute_velocity_magnitude(ux, uy)
+    for j in range(1, Ny - 1):
+        for i in range(1, Nx - 1):
 
-    dv_dx = (
-        v_center[:, 2:] -
-        v_center[:, :-2]
-    ) / (2.0 * dx)
+            # Average ux onto north/south faces
+            ux_north = 0.5 * (
+                ux[j, i-1] +
+                ux[j, i]
+            )
 
-    du_dy = (
-        u_center[2:, :] -
-        u_center[:-2, :]
-    ) / (2.0 * dy)
+            ux_south = 0.5 * (
+                ux[j-1, i-1] +
+                ux[j-1, i]
+            )
 
-    omega = (
-        dv_dx[1:-1, :]
-        -
-        du_dy[:, 1:-1]
-    )
+            # Average uy onto east/west faces
+            uy_east = 0.5 * (
+                uy[j-1, i] +
+                uy[j, i]
+            )
+
+            uy_west = 0.5 * (
+                uy[j-1, i-1] +
+                uy[j, i-1]
+            )
+
+            omega[j-1, i-1] = (
+                (uy_east - uy_west)/dx
+                -
+                (ux_north - ux_south)/dy
+            )
 
     return omega
-
-# ==========================================================
-# Vorticity centreline
-# ==========================================================
 
 def extract_vorticity_centerlines(omega, dx, dy):
     """
     Extract numerical vorticity along the horizontal and
     vertical centre lines.
     """
-
     Ny, Nx = omega.shape
 
     centre_y = Ny // 2
     centre_x = Nx // 2
 
-    omega_horizontal = omega[centre_y, :]
-    omega_vertical = omega[:, centre_x]
+    # Ignore two cells near each wall
+    omega_horizontal = omega[centre_y, 2:-2]
+    omega_vertical   = omega[2:-2, centre_x]
 
-    x = (np.arange(Nx)+ 1) * dx
-    y = (np.arange(Ny)+ 1) * dy
+    x = (np.arange(2, Nx-2) + 1) * dx
+    y = (np.arange(2, Ny-2) + 1) * dy
 
     return x, omega_horizontal, y, omega_vertical
+
 
 
 # ==========================================================

@@ -4,7 +4,6 @@ from scipy.sparse.linalg import factorized
 
 from src.utils.boundary_conditions import (
     velocity_bc,
-    pressure_bc,
 )
 
 from src.utils.velocity_correction import (
@@ -99,7 +98,7 @@ def run_simulation(
 
         p = p_vec.reshape((Ny, Nx))
 
-        p = pressure_bc(p)
+        # p = pressure_bc(p)
 
         ux = compute_ux(
             ux_star,
